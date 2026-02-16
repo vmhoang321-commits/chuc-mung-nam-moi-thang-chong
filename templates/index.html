@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy New Year Friends</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+h1 {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 20px;
+    font-size: 48px;
+    color: cyan;
+    text-shadow: 0 0 10px cyan, 0 0 20px blue;
+    z-index: 10;
+}
+
+.hint {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 30px;
+    font-size: 18px;
+    opacity: 0.7;
+    animation: blink 1.5s infinite;
+    z-index: 10;
+}
+
+@keyframes blink {
+    0% {opacity: 0.3;}
+    50% {opacity: 1;}
+    100% {opacity: 0.3;}
+}
+
+canvas {
+    display: block;
+}
+
+.message-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(0,0,0,0.95);
+    padding: 30px 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 0 30px cyan;
+    transition: 0.4s;
+    max-width: 600px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.message-box.show {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+button {
+    margin-top: 20px;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 10px;
+    background: cyan;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎉 Happy New Year Thằng Chòn🥵🥵🥵 🎉</h1>
+<div class="hint" id="hint">👉 Bấm vào pháo hoa đi thằng chòn🤌🤌 🔥</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="message-box" id="msgBox">
+    <div id="msgText"></div>
+    <button onclick="closeMsg()">Đóng</button>
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const friendWish = `
+Chúc thằng chòn năm mới thèn côn,
+Họt ít hỉu nhìu,ngủ th cũn xinh,
+deadline tự cook,
+tiền vào như nước.
+
+Game auto thắng,
+thi 1000% điểm cao.
+
+Chơi hết mình – sống hết cỡ –
+đừn nyc nyc nyc nứa
+típ tụt cs vui vẻ nhaaa
+
+2026 vui veeeee!!!
+`;
+
+let fireworks = [];
+let particles = [];
+
+class Firework {
+    constructor() {
+        this.x = Math.random()*canvas.width;
+        this.y = canvas.height;
+        this.targetY = Math.random()*canvas.height/2;
+        this.speed = 5;
+        this.color = `hsl(${Math.random()*360},100%,60%)`;
+    }
+
+    update(){
+        this.y -= this.speed;
+        if(this.y <= this.targetY){
+            explode(this.x,this.y,this.color);
+            return false;
+        }
+        return true;
+    }
+
+    draw(){
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,3,0,Math.PI*2);
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+}
+
+class Particle {
+    constructor(x,y,color){
+        this.x=x;
+        this.y=y;
+        this.speed=Math.random()*4+1;
+        this.angle=Math.random()*Math.PI*2;
+        this.life=100;
+        this.color=color;
+    }
+
+    update(){
+        this.x+=Math.cos(this.angle)*this.speed;
+        this.y+=Math.sin(this.angle)*this.speed;
+        this.speed*=0.97;
+        this.life--;
+        return this.life>0;
+    }
+
+    draw(){
+        ctx.globalAlpha=this.life/100;
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,2,0,Math.PI*2);
+        ctx.fillStyle=this.color;
+        ctx.fill();
+        ctx.globalAlpha=1;
+    }
+}
+
+function explode(x,y,color){
+    for(let i=0;i<70;i++){
+        particles.push(new Particle(x,y,color));
+    }
+}
+
+function animate(){
+    ctx.fillStyle="rgba(0,0,0,0.25)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    fireworks=fireworks.filter(f=>f.update());
+    fireworks.forEach(f=>f.draw());
+
+    particles=particles.filter(p=>p.update());
+    particles.forEach(p=>p.draw());
+
+    requestAnimationFrame(animate);
+}
+
+setInterval(()=>{fireworks.push(new Firework());},700);
+
+canvas.addEventListener("click",()=>{
+    document.getElementById("msgText").innerText=friendWish;
+    document.getElementById("msgBox").classList.add("show");
+    document.getElementById("hint").style.display="none";
+});
+
+function closeMsg(){
+    document.getElementById("msgBox").classList.remove("show");
+}
+
+animate();
+</script>
+
+</body>
+</html>
