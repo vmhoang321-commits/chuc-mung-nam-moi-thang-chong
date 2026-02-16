@@ -6,6 +6,10 @@
 <title>Happy New Year Friends</title>
 
 <style>
+*{
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     overflow: hidden;
@@ -14,26 +18,30 @@ body {
     color: white;
 }
 
+/* ===== TITLE ===== */
 h1 {
     position: absolute;
     width: 100%;
     text-align: center;
-    top: 20px;
-    font-size: 48px;
+    top: 15px;
+    font-size: clamp(22px, 5vw, 48px);
     color: cyan;
     text-shadow: 0 0 10px cyan, 0 0 20px blue;
     z-index: 10;
+    padding: 0 10px;
 }
 
+/* ===== HINT ===== */
 .hint {
     position: absolute;
     width: 100%;
     text-align: center;
-    bottom: 30px;
-    font-size: 18px;
+    bottom: 20px;
+    font-size: clamp(14px, 3.5vw, 18px);
     opacity: 0.7;
     animation: blink 1.5s infinite;
     z-index: 10;
+    padding: 0 10px;
 }
 
 @keyframes blink {
@@ -46,17 +54,19 @@ canvas {
     display: block;
 }
 
+/* ===== MESSAGE BOX ===== */
 .message-box {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
     background: rgba(0,0,0,0.95);
-    padding: 30px 40px;
+    padding: 25px;
     border-radius: 20px;
     text-align: center;
     box-shadow: 0 0 30px cyan;
     transition: 0.4s;
+    width: 90%;
     max-width: 600px;
     line-height: 1.6;
     white-space: pre-line;
@@ -68,11 +78,19 @@ canvas {
 
 button {
     margin-top: 20px;
-    padding: 8px 20px;
+    padding: 12px 25px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     background: cyan;
+    font-size: 16px;
     cursor: pointer;
+}
+
+/* Mobile nhỏ hơn */
+@media (max-width:480px){
+    .message-box{
+        padding:20px;
+    }
 }
 </style>
 </head>
@@ -93,8 +111,12 @@ button {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+function resizeCanvas(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
 const friendWish = `
 Chúc chòn năm mới thèn côn,
@@ -193,11 +215,15 @@ function animate(){
 
 setInterval(()=>{fireworks.push(new Firework());},700);
 
-canvas.addEventListener("click",()=>{
+/* Hỗ trợ cả PC + điện thoại */
+function showMessage(){
     document.getElementById("msgText").innerText=friendWish;
     document.getElementById("msgBox").classList.add("show");
     document.getElementById("hint").style.display="none";
-});
+}
+
+canvas.addEventListener("click", showMessage);
+canvas.addEventListener("touchstart", showMessage);
 
 function closeMsg(){
     document.getElementById("msgBox").classList.remove("show");
